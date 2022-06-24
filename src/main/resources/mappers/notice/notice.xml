@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="notice">
+
+	<select id="list" resultType ="com.example.trip.model.notice.NoticeDTO">
+		SELECT *
+		FROM notice
+		WHERE  
+			contents LIKE CONCAT('%', #{keyword} ,'%')   
+			or title LIKE CONCAT('%', #{keyword} ,'%')  	
+		ORDER BY idx DESC , regdate DESC 
+		LIMIT #{start}, 10
+	</select>
+
+	<select id="detail" resultType="com.example.trip.model.notice.NoticeDTO">
+		SELECT idx, title, contents, regdate, hit
+		FROM notice
+		WHERE idx=#{idx}
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO notice (title, contents) 
+		VALUES (#{title}, #{contents})
+	</insert>
+	
+	<update id="update">
+		UPDATE notice SET title= #{title} , contents= #{contents}
+		WHERE idx = #{idx}
+	</update>
+	
+	<delete id="delete">
+		DELETE FROM notice
+		WHERE idx = #{idx}
+	</delete>
+
+	<select id="count" resultType="int">
+		SELECT count(*) FROM notice
+		WHERE  
+			contents LIKE CONCAT('%', #{keyword} ,'%')   
+			or title LIKE CONCAT('%', #{keyword} ,'%')  	
+	</select>
+	
+	<update id ="increase_hit">
+		UPDATE notice SET hit=hit+1 WHERE idx=#{idx}
+	</update>
+	
+	<select id="file_info" resultType="String">
+		SELECT filename FROM notice
+		WHERE idx= #{idx}
+	</select>
+
+</mapper>

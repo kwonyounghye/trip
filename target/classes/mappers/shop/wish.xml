@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="wish">
+	
+	<!-- 추가 -->
+	<insert id="insert"> 
+		<!-- wish 테이블에 id, code, amount 값 추가 -->
+		insert into wish(id, code, amount) values
+		(#{id}, #{code}, #{amount})
+	</insert>
+	
+	<!-- 수정 -->
+	<update id="modify">
+		<!-- wish 테이블의 wish_id(위시리스트 번호)의 amount(인원수)를 업데이트(변경) 시킨다 -->
+		update wish set amount=#{amount} where wish_id=#{wish_id}
+	</update>
+	
+	<!-- 개별 삭제 -->
+	<delete id="delete">
+		<!-- wish 테이블의 wish_id(위시리스트 번호)를 삭제한다 -->
+		delete from wish where wish_id=#{wish_id}
+	</delete>
+	
+	<!-- 전체 삭제 -->
+	<delete id="delete_all">
+		<!-- id(회원 아이디)를 wish 테이블에서 전체 삭제한다 -->
+		delete from wish where id=#{id}
+	</delete>
+	
+	<!-- list 보여주기 -->
+	<select id="list" resultType="com.example.trip.model.shop.WishDTO">
+		<!-- 선택한 값 : wish_id(위시리스트 번호), p.code(상품코드), w.id(위시리스트 회원아이디), name(사용자 이름),  -->
+		select wish_id, p.code, w.id, name, title, amount, price, price*amount money
+		from member m, wish w, product p
+		where m.id=w.id and w.code=p.code and w.id=#{id}
+		order by wish_id 
+	</select>
+	
+	<select id="sum_money" resultType="int">
+		select ifnull(sum(price*amount), 0) from wish w, product p
+		where w.code=p.code and id=#{id}
+	</select>
+	
+	<select id="wish_money" resultType="com.example.trip.model.shop.WishDTO">
+		select title, sum(price*amount) money
+		from wish w, product p
+		where w.code = p.code
+		group by title
+		order by title
+	</select>
+</mapper>

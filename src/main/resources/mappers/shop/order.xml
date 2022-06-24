@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="order">
+
+	<insert id="insert">
+		insert into orderList(id, code, name, address, phone,amount, pay) values
+		(#{id}, #{code}, #{name}, #{address}, #{phone}, #{amount}, #{pay})
+	</insert>
+
+	<update id="modify">
+		update orderList set amount=#{amount} 
+		where order_id=#{order_id}
+	</update>
+
+	<select id="orderPage" resultType="com.example.trip.model.product.ProductDTO">
+		select title, code, price
+		from product  
+		where code=#{code}
+	</select>
+
+	<select id="sum_money" resultType="int">
+		select ifnull(sum(price*amount), 0) 
+		from orderList o, product p
+		where o.code=p.code and order_id=#{order_id}
+	</select>
+
+</mapper> 

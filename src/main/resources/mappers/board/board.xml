@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="board">
+
+	<select id="list" resultType ="com.example.trip.model.board.BoardDTO">
+		SELECT board_idx, title, writer, m.name, contents, b.regdate, hit,
+					(SELECT count(*) FROM reply r WHERE r.board_idx=b.board_idx) cnt 
+		FROM board b, member m
+		WHERE b.writer = m.id
+		AND 
+		(contents LIKE CONCAT('%', #{keyword} ,'%')   
+			or title LIKE CONCAT('%', #{keyword} ,'%')
+			or name LIKE CONCAT('%', #{keyword} ,'%'))	
+		ORDER BY board_idx DESC , b.regdate DESC 
+		LIMIT #{start}, 10
+	</select>
+
+	<select id="detail" resultType ="com.example.trip.model.board.BoardDTO">
+		SELECT board_idx, title, writer, m.name name, contents, b.regdate, hit,
+					(SELECT count(*) FROM reply r WHERE r.board_idx=b.board_idx) cnt  
+		FROM board b, member m
+		WHERE b.writer = m.id
+		AND board_idx=#{board_idx}
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO board (title,writer,contents) 
+  		VALUES (#{title}, #{writer}, #{contents})
+	</insert>
+	
+	<update id="update">
+		UPDATE board SET title=#{title} , contents=#{contents}
+		WHERE board_idx = #{board_idx}
+	</update>
+
+	<delete id="delete">
+		DELETE FROM board WHERE board_idx = #{board_idx}
+	</delete>
+	
+	<select id="count" resultType="int">
+		SELECT count(*)
+		FROM board b, member m
+		WHERE b.writer = m.id
+		AND 
+		(contents LIKE CONCAT('%', #{keyword} ,'%')   
+			or title LIKE CONCAT('%', #{keyword} ,'%')
+			or name LIKE CONCAT('%', #{keyword} ,'%'))	
+		ORDER BY board_idx DESC , regdate DESC 
+	</select>
+	
+	<update id ="increase_hit">
+		update board set hit=hit+1 where board_idx=#{board_idx}
+	</update>
+
+</mapper>
